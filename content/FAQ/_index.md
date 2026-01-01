@@ -34,6 +34,8 @@ hyprlang
 hyprcursor
 aquamarine
 xdg-desktop-portal-hyprland
+hyprwire
+hyprtoolkit
 hyprland
 ```
 
@@ -76,7 +78,7 @@ For Nvidia graphics - This issue appears to be resolved when using Nvidia
 Drivers 525.60.11 or later, but it may persist with older drivers.
 
 For systems with limited hardware (Ex. iGPU, USB-C, USB Hubs) - Set `env = AQ_NO_MODIFIERS,1` in your config.
-To diagnose if you have the exact problem above you can get a [DRM log](https://wiki.hyprland.org/Crashes-and-Bugs/#debugging-drm-issues) and look for
+To diagnose if you have the exact problem above you can get a [DRM log](https://wiki.hypr.land/Crashes-and-Bugs/#debugging-drm-issues) and look for
 
 ```plain
 Requested display configuration exceeds system DDB limitations
@@ -130,15 +132,15 @@ use Flameshot, here are some configuration recommendations by users who've found
 workarounds.
 
 ```ini
-# noanim isn't necessary but animations with these rules might look bad. use at your own discretion.
-windowrule = noanim, class:^(flameshot)$
-windowrule = float, class:^(flameshot)$
-windowrule = move 0 0, class:^(flameshot)$
-windowrule = pin, class:^(flameshot)$
-windowrule = noinitialfocus, class:^(flameshot)$
+# no_anim isn't necessary but animations with these rules might look bad. use at your own discretion.
+windowrule = match:class flameshot, no_anim
+windowrule = match:class flameshot, float
+windowrule = match:class flameshot, move 0 0
+windowrule = match:class flameshot, pin
+windowrule = match:class flameshot, no_initial_focus
 # set this to your leftmost monitor id, otherwise you have to move your cursor to the leftmost monitor
 # before executing flameshot
-windowrule = monitor 1, class:^(flameshot)$
+windowrule = match:class flameshot, monitor 1
 
 # ctrl-c to copy from the flameshot gui gives warped images sometimes, but
 # setting the env fixes it
@@ -347,9 +349,9 @@ these window rules to your config to make these programs work with both of your
 screens.
 
 ```ini
-windowrule2 = float,title:^(flameshot)
-windowrule = move 0 0,title:^(flameshot)
-windowrule = suppressevent fullscreen,title:^(flameshot)
+windowrule = match:title flameshot, float true
+windowrule = match:title flameshot, move 0 0
+windowrule = match:title flameshot, suppress_event fullscreen
 ```
 
 ### I cannot bind SUPER as my mod key on my laptop
@@ -403,7 +405,7 @@ Window 55d794495400 -> :
 If the pop-up disappears as you hover over it, you can add to your config:
 
 ```ini
-windowrule = stayfocused, title:^(TITLE)$, class:^(CLASS)$
+windowrule = stay_focused, match:class CLASS, match:title TITLE
 ```
 
 This has a downside of not being able to click on anything in the main UI until
@@ -412,13 +414,13 @@ you've interacted with the pop-up.
 If the pop-up disappears immediately, you can use:
 
 ```ini
-windowrule = minsize 1 1, title:^(TITLE)$, class:^(CLASS)$
+windowrule = min_size 1 1, match:class CLASS, match:title TITLE
 ```
 
 If the pop-up doesn't open at the cursor position, try the following:
 
 ```ini
-windowrule = move onscreen cursor, title:^(TITLE)$, class:^(CLASS)$
+windowrule = move cursor_x cursor_y, match:class CLASS, match:title TITLE
 ```
 
 This is required for apps running under xwayland only and there is usually no need
@@ -487,11 +489,8 @@ You most likely have `env = ELECTRON_OZONE_PLATFORM_HINT, wayland` in your confi
 
 Try running Discord like this `ELECTRON_OZONE_PLATFORM_HINT= discord`.
 
-{{< callout >}}
-
-Keep in mind that this will run Discord under XWayland.
-
-{{< /callout >}}
+> [!WARNING]
+> Keep in mind that this will run Discord under XWayland.
 
 If it works, navigate to the Discord desktop entry (usually located in `/usr/share/applications/`). Duplicate it and replace `Exec=/usr/bin/discord` with `Exec=env ELECTRON_OZONE_PLATFORM_HINT= /usr/bin/discord`. You can also give it a new name, e.g. `Name=DiscordX`, to avoid confusion as to which is which.
 
